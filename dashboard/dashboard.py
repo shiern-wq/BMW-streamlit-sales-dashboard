@@ -1,185 +1,44 @@
 import streamlit as st
 import pandas as pd
-import joblib
-import plotly.express as px
 
-# -------------------------------
-# Page Configuration
-# -------------------------------
-st.set_page_config(
-    page_title="BMW Sales Dashboard",
-    page_icon="🚗",
-    layout="wide"
+st.title("BMW Sales Dashboard")
+
+@st.cache_data
+def load_data():
+    df = pd.read_csv("data/sales.csv", parse_dates=["sale_date"])
+    return df
+
+df = load_data()
+
+st.sidebar.header("Filter Options")
+
+Country = st.sidebar.selectbox(
+    "Select Country",
+    options=["All"] + sorted(df["country"].unique().tolist())
 )
 
-# -------------------------------
-# Load Data
-# -------------------------------
-df = pd.read_csv("bmw_sales_2024_2025.csv")
+if Country != "All":
+    df = df[df["country"] == Country]
 
-# -------------------------------
-# Dashboard Title
-# -------------------------------
-st.title("🚗 BMW Sales Analytics Dashboard")
-st.markdown("### Agile Data Science Project")
-
-st.markdown("---")
-
-# -------------------------------
-# Sidebar
-# -------------------------------
-st.sidebar.header("Filters")
-
-region = st.sidebar.selectbox(
-    "Region",
-    ["All"] + sorted(df["region"].unique().tolist())
+Model = st.sidebar.selectbox(
+    "Select Model",
+    options=["All"] + sorted(df["model"].unique().tolist())
 )
 
-fuel = st.sidebar.selectbox(
-    "Fuel Type",
-    ["All"] + sorted(df["fuel_type"].unique().tolist())
+if Model != "All":
+    df = df[df["model"] == Model]
+
+Sales_Channel = st.sidebar.selectbox(
+    "Select Sales_Chanel",
+    options=["All"] + sorted(df["Sales Channel"].unique().tolist())
 )
 
-price = st.sidebar.slider(
-    "MSRP Range",
-    int(df["msrp_usd"].min()),
-    int(df["msrp_usd"].max()),
-    (
-        int(df["msrp_usd"].min()),
-        int(df["msrp_usd"].max())
-    )
-)
+if Sales_Channel != "All":
+     df = df[df["Sales_Channel"] == Sales_Channel]
 
-# Apply filters
-filtered = df.copy()
 
-if region != "All":
-    filtered = filtered[filtered["region"] == region]
+st.subheader("Metrics")
+st.metric("final_sale_price_usd", int(df["final_sale_price_usd"].sum()))
 
-if fuel != "All":
-    filtered = filtered[filtered["fuel_type"] == fuel]
-
-filtered = filtered[
-    (filtered["msrp_usd"] >= price[0]) &
-    (filtered["msrp_usd"] <= price[1])
-]
-
-# -------------------------------
-# KPI Cards
-# -------------------------------
-
-c1,c2,c3,c4 = st.columns(4)
-
-c1.metric(
-    "Total Sales",
-    len(filtered)
-)
-
-c2.metric(
-    "Average MSRP",
-    f"${filtered['msrp_usd'].mean():,.0f}"
-)
-
-c3.metric(
-    "Average Final Price",
-    f"${filtered['final_sale_price_usd'].mean():,.0f}"
-)
-
-c4.metric(
-    "Average Satisfaction",
-    f"{filtered['customer_satisfaction_score'].mean():.2f}"
-)
-
-st.markdown("---")
-
-# -------------------------------
-# Visualization 1
-# -------------------------------
-
-col1,col2 = st.columns(2)
-
-fig = px.histogram(
-    filtered,
-    x="final_sale_price_usd",
-    nbins=30,
-    title="Distribution of Final Sale Price"
-)
-
-col1.plotly_chart(fig,use_container_width=True)
-
-# -------------------------------
-# Visualization 2
-# -------------------------------
-
-fig2 = px.scatter(
-    filtered,
-    x="msrp_usd",
-    y="final_sale_price_usd",
-    color="fuel_type",
-    title="MSRP vs Final Sale Price"
-)
-
-col2.plotly_chart(fig2,use_container_width=True)
-
-# -------------------------------
-# Visualization 3
-# -------------------------------
-
-fig3 = px.bar(
-    filtered.groupby("region")["final_sale_price_usd"].mean().reset_index(),
-    x="region",
-    y="final_sale_price_usd",
-    title="Average Final Sale Price by Region"
-)
-
-st.plotly_chart(fig3,use_container_width=True)
-
-# -------------------------------
-# Visualization 4
-# -------------------------------
-
-fig4 = px.box(
-    filtered,
-    x="fuel_type",
-    y="final_sale_price_usd",
-    title="Fuel Type vs Final Price"
-)
-
-st.plotly_chart(fig4,use_container_width=True)
-
-st.markdown("---")
-
-# -------------------------------
-# Prediction Section
-# -------------------------------
-
-st.header("Prediction")
-
-st.info("Example Prediction")
-
-msrp = st.number_input(
-    "MSRP",
-    value=60000
-)
-
-discount = st.number_input(
-    "Discount (%)",
-    value=5.0
-)
-
-# Simple prediction formula
-predicted_price = msrp * (1-discount/100)
-
-st.success(
-    f"Predicted Final Sale Price = ${predicted_price:,.2f}"
-)
-
-st.markdown("---")
-
-# -------------------------------
-# Data Table
-# -------------------------------
-
-st.header("Filtered Dataset")
-
-st.dataframe(filtered)
+st.subheader("Filtered Sales Data")
+st.dataframe(df)
