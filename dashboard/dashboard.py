@@ -5,7 +5,7 @@ import plotly.express as px
 
 st.title("BMW Sales Dashboard")
 st.markdown("Real-time transactional business operations insights")
-page_icon="🚗",
+st.page_icon=("🚗")
 
 @st.cache_data
 def load_data():
