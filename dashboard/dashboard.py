@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 
-st.title("Sales Dashboard")
+st.title("BMW Sales Dashboard")
 
 @st.cache_data
 def load_data():
@@ -19,6 +19,23 @@ Country = st.sidebar.selectbox(
 
 if Country != "All":
     df = df[df["country"] == Country]
+
+Model = st.sidebar.selectbox(
+    "Select Model",
+    options=["All"] + sorted(df["model"].unique().tolist())
+)
+
+if Model != "All":
+    df = df[df["model"] == Model]
+
+Sales_Channel = st.sidebar.selectbox(
+    "Select Sales_Chanel",
+    options=["All"] + sorted(df["Sales Channel"].unique().tolist())
+)
+
+if Model != "All":
+    df = df[df["Sales Channel"] == Sales Channel]
+
 
 st.subheader("Metrics")
 st.metric("final_sale_price_usd", int(df["final_sale_price_usd"].sum()))
