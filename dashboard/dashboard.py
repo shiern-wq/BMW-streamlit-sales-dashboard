@@ -35,22 +35,10 @@ st.metric("final_sale_price_usd", int(df["final_sale_price_usd"].sum()))
 st.subheader("Filtered Sales Data")
 st.dataframe(df)
 
-kpi1, kpi2, kpi3, kpi4 = st.columns(4)
-
-total_sales = filtered_df["Sales"].sum()
-total_profit = filtered_df["Profit"].sum()
-total_items = filtered_df["Quantity"].sum()
-avg_margin = (total_profit / total_sales) * 100 if total_sales > 0 else 0
-
-with kpi1:
-    st.metric(label="discount_percent", value=f"${total_discount_percent:,.2f}", delta="+4.2%")
-
-with kpi2:
-    st.metric(label="discount_amount_usd", value=f"${total_discount_amount_usd:,.2f}", delta=f"+${total_profit*0.02:,.2f}")
-
-with kpi3:
-    st.metric(label="Loan_term_months", value=f"{total_Loan_term_months:,}", delta="-1.5%", delta_color="inverse")
-
-with kpi4:
-    st.metric(label="customer_satisfaction_score", value=f"{customer_satisfaction_score:.1f}%", delta="0.8%")
+drift_summary = clean_df.groupby('sale_year')[['msrp_usd','final_sale_price_usd','discount_percent']].mean().round(2)
+display(drift_summary)
+drift_summary.plot(kind='bar', figsize=(8,5))
+plt.title('Data Drift Check: Average Pricing Variables by Year')
+plt.xlabel('Sale Year'); plt.ylabel('Average Value')
+plt.show()
 
