@@ -43,15 +43,14 @@ total_items = filtered_df["Quantity"].sum()
 avg_margin = (total_profit / total_sales) * 100 if total_sales > 0 else 0
 
 with kpi1:
-    st.metric(label="Total Revenue", value=f"${total_sales:,.2f}", delta="+4.2%")
+    st.metric(label="discount_percent", value=f"${total_discount_percent:,.2f}", delta="+4.2%")
 
 with kpi2:
-    st.metric(label="Net Profit", value=f"${total_profit:,.2f}", delta=f"+${total_profit*0.02:,.2f}")
+    st.metric(label="discount_amount_usd", value=f"${total_discount_amount_usd:,.2f}", delta=f"+${total_profit*0.02:,.2f}")
 
 with kpi3:
-    st.metric(label="Units Sold", value=f"{total_items:,}", delta="-1.5%", delta_color="inverse")
+    st.metric(label="Loan_term_months", value=f"{total_Loan_term_months:,}", delta="-1.5%", delta_color="inverse")
 
 with kpi4:
-    st.metric(label="Profit Margin", value=f"{avg_margin:.1f}%", delta="0.8%")
+    st.metric(label="customer_satisfaction_score", value=f"{customer_satisfaction_score:.1f}%", delta="0.8%")
 
-st.markdown("---") # Visual separator divider
