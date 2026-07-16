@@ -3,33 +3,66 @@ import pandas as pd
 import joblib
 import plotly.express as px
 
-st.title("BMW Sales Dashboard")
-st.markdown("Real-time transactional business operations insights")
-
-@st.cache_data
-def load_data():
-    df = pd.read_csv("data/sales.csv", parse_dates=["sale_date"])
-    return df
-
-df = load_data()
-
-st.sidebar.header("Filter Options")
-
-Country = st.sidebar.selectbox(
-    "Select Country",
-    options=["All"] + sorted(df["country"].unique().tolist())
+# -------------------------------
+# Page Configuration
+# -------------------------------
+st.set_page_config(
+    page_title="BMW Sales Dashboard",
+    page_icon="🚗",
+    layout="wide"
 )
 
-if Country != "All":
-    df = df[df["country"] == Country]
+# -------------------------------
+# Load Data
+# -------------------------------
+df = pd.read_csv("bmw_sales_2024_2025.csv")
 
-Model = st.sidebar.selectbox(
-    "Select Model",
-    options=["All"] + sorted(df["model"].unique().tolist())
+# -------------------------------
+# Dashboard Title
+# -------------------------------
+st.title("🚗 BMW Sales Analytics Dashboard")
+st.markdown("### Agile Data Science Project")
+
+st.markdown("---")
+
+# -------------------------------
+# Sidebar
+# -------------------------------
+st.sidebar.header("Filters")
+
+region = st.sidebar.selectbox(
+    "Region",
+    ["All"] + sorted(df["region"].unique().tolist())
 )
 
-if Model != "All":
-    df = df[df["model"] == Model]
+fuel = st.sidebar.selectbox(
+    "Fuel Type",
+    ["All"] + sorted(df["fuel_type"].unique().tolist())
+)
+
+price = st.sidebar.slider(
+    "MSRP Range",
+    int(df["msrp_usd"].min()),
+    int(df["msrp_usd"].max()),
+    (
+        int(df["msrp_usd"].min()),
+        int(df["msrp_usd"].max())
+    )
+)
+
+# Apply filters
+filtered = df.copy()
+
+if region != "All":
+    filtered = filtered[filtered["region"] == region]
+
+if fuel != "All":
+    filtered = filtered[filtered["fuel_type"] == fuel]
+
+filtered = filtered[
+    (filtered["msrp_usd"] >= price[0]) &
+    (filtered["msrp_usd"] <= price[1])
+]
 
 # -------------------------------
 # KPI Cards
@@ -147,8 +180,6 @@ st.markdown("---")
 # Data Table
 # -------------------------------
 
-st.subheader("Metrics")
-st.metric("final_sale_price_usd", int(df["final_sale_price_usd"].sum()))
+st.header("Filtered Dataset")
 
-st.subheader("Filtered Sales Data")
-st.dataframe(df)
+st.dataframe(filtered)
