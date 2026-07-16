@@ -28,15 +28,6 @@ Model = st.sidebar.selectbox(
 if Model != "All":
     df = df[df["model"] == Model]
 
-Sales_Channel = st.sidebar.selectbox(
-    "Select Sales_Chanel",
-    options=["All"] + sorted(df["Sales Channel"].unique().tolist())
-)
-
-if Sales_Channel != "All":
-    df = df[df["Sales Channel"] == Sales Channel]
-
-
 st.subheader("Metrics")
 st.metric("final_sale_price_usd", int(df["final_sale_price_usd"].sum()))
 
