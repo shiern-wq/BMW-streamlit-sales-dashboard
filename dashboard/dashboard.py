@@ -33,7 +33,7 @@ Sales_Channel = st.sidebar.selectbox(
     options=["All"] + sorted(df["Sales Channel"].unique().tolist())
 )
 
-if Model != "All":
+if Sales_Channel != "All":
     df = df[df["Sales Channel"] == Sales Channel]
 
 
