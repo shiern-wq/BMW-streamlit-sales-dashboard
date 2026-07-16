@@ -4,7 +4,6 @@ import pandas as pd
 st.title("BMW Sales Dashboard")
 st.markdown("Real-time transactional business operations insights")
 page_icon="🚗",
-    layout="wide"
 
 @st.cache_data
 def load_data():
